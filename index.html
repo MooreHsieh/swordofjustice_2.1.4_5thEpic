@@ -640,6 +640,45 @@
     }
 
     function findBestForCurrentRound(attrs) {
+      // 第3輪特例：同時出攻速+範圍時，兩者都不站，只派兩隊站狂暴與另一個屬性
+      if (state.currentRound === 3 && attrs.includes("攻速") && attrs.includes("範圍")) {
+        const otherAttr = attrs.find((attr) => attr !== "攻速" && attr !== "範圍");
+        if (!otherAttr) return null;
+        const round2BerserkTeam = getRoundBerserkTeam(2);
+        let specialBest = null;
+
+        for (let berserkTeam = 0; berserkTeam < 3; berserkTeam += 1) {
+          if (state.noBerserk[berserkTeam]) continue;
+          if (berserkTeam === round2BerserkTeam) continue;
+
+          for (let otherTeam = 0; otherTeam < 3; otherTeam += 1) {
+            if (otherTeam === berserkTeam) continue;
+            if (state.usedAttrs[otherTeam].has(otherAttr)) continue;
+
+            const teams = ["不站", "不站", "不站"];
+            teams[berserkTeam] = "狂暴";
+            teams[otherTeam] = otherAttr;
+
+            const tempUsage = state.usedAttrs.map((set) => new Set(set));
+            tempUsage[otherTeam].add(otherAttr);
+
+            const candidate = {
+              teams,
+              king: "攻速 + 範圍",
+              easeKey: JAR_PRIORITY.map((jarName) => teams.filter((jar) => jar === jarName).length),
+              team3Berserk: teams[2] === "狂暴" ? 1 : 0,
+              flexibility: tempUsage.reduce((sum, set) => sum + (5 - set.size), 0)
+            };
+
+            if (compareCandidate(candidate, specialBest) > 0) {
+              specialBest = candidate;
+            }
+          }
+        }
+
+        return specialBest;
+      }
+
       const jars = [...attrs, "狂暴"];
       const round2BerserkTeam = state.currentRound === 3 ? getRoundBerserkTeam(2) : -1;
       let best = null;
@@ -716,10 +755,10 @@
       }
 
       const attrs = [...state.selected];
-      // 特例規則：攻速+範圍同時出現時，直接提示重開，不進行分配
-      if (attrs.includes("攻速") && attrs.includes("範圍")) {
+      const shouldWarnRestart = attrs.includes("攻速") && attrs.includes("範圍") && state.currentRound !== 3;
+      if (shouldWarnRestart) {
         renderQuickResult(null);
-        setMessage("請自斷重新開始", "error");
+        setMessage("建議自斷重新開始", "error");
         return;
       }
 
@@ -746,7 +785,7 @@
       state.records.forEach((rec) => {
         for (let t = 0; t < 3; t += 1) {
           const jar = rec.teams[t];
-          if (jar !== "狂暴") state.usedAttrs[t].add(jar);
+          if (jar !== "狂暴" && jar !== "不站") state.usedAttrs[t].add(jar);
         }
       });
     }
