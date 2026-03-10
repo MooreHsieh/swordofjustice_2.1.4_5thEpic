@@ -50,7 +50,7 @@
 
     h1 {
       margin: 0;
-      font-size: 1.55rem;
+      font-size: 2rem;
     }
 
     .title-sub {
@@ -94,7 +94,7 @@
     .jar-grid {
       margin-top: 12px;
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 10px;
     }
 
@@ -127,11 +127,68 @@
       transform: none;
     }
 
-    .selected {
-      margin-top: 12px;
-      color: #0f172a;
-      font-size: 0.94rem;
-      line-height: 1.5;
+    .quick-result {
+      margin-top: 10px;
+      padding: 0;
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
+
+    .quick-result-grid {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick-result-cell {
+      text-align: center;
+      min-height: 42px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 42px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      padding: 10px 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .role-team1 {
+      background: #eaf6ef;
+      border-color: #bfdcc8;
+      color: #2f6a45;
+    }
+
+    .role-team2 {
+      background: #fff8e8;
+      border-color: #ecdcae;
+      color: #8b6a12;
+    }
+
+    .role-team3 {
+      background: #fdeff0;
+      border-color: #e8c3c6;
+      color: #8c3e44;
+    }
+
+    .role-king {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      color: #4b5563;
+    }
+
+    .role-empty {
+      background: #f8fafc;
+      border-color: #e5e7eb;
+      color: #94a3b8;
     }
 
     .debuff-row {
@@ -139,6 +196,41 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      align-items: center;
+    }
+
+    .debuff-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    /* 第一個卡片文字整體放大 1.5 倍（不影響按鈕） */
+    .main-card h1 {
+      font-size: 3rem;
+    }
+
+    .main-card .title-sub {
+      font-size: 1.43rem;
+    }
+
+    .main-card .subtitle,
+    .main-card .message {
+      font-size: 1.43rem;
+    }
+
+    .main-card .hint {
+      font-size: 1.35rem;
+    }
+
+    .main-card .round-chip,
+    .main-card .debuff-label {
+      font-size: 1.38rem;
+    }
+
+    .battle-grid {
+      display: block;
     }
 
     .debuff-btn {
@@ -159,6 +251,17 @@
       color: #991b1b;
     }
 
+    .debuff-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (min-width: 781px) {
+      .debuff-btn {
+        min-width: 110px;
+      }
+    }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -174,6 +277,10 @@
       font-weight: 700;
       cursor: pointer;
       transition: 0.15s ease;
+    }
+
+    #confirmBtn {
+      min-width: 160px;
     }
 
     .primary {
@@ -259,15 +366,125 @@
         padding: 12px;
       }
 
-      .jar-grid {
+      .card {
+        padding: 16px;
+      }
+
+      /* 第一個卡片文字放大，和 2rem 按鈕比例一致 */
+      h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .title-sub {
+        display: inline;
+        margin-left: 8px;
+        margin-top: 0;
+        font-size: 1.3rem;
+        font-weight: 500;
+      }
+
+      .subtitle,
+      .hint,
+      .message {
+        font-size: 1.3rem;
+        line-height: 1.5;
+      }
+
+      .round-chip {
+        font-size: 1.2rem;
+        padding: 10px 14px;
+      }
+
+      .debuff-row {
+        gap: 6px;
+        flex-wrap: nowrap;
+      }
+
+      .debuff-label {
+        flex: 0 0 auto;
+        font-size: 1.2rem;
+      }
+
+      .debuff-btn {
+        flex: 1 1 0;
+        min-height: 72px;
+        font-size: 2rem;
+        padding: 4px 0;
+        text-align: center;
+      }
+
+      /* 手機：左屬性、右隊伍標記，兩欄直式對照 */
+      .battle-grid {
+        margin-top: 10px;
+        display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .quick-result {
+        margin-top: 0;
+      }
+
+      .jar-grid,
+      .quick-result-grid {
+        margin-top: 0;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .jar-btn,
+      .role-badge {
+        min-height: 76px;
+        padding: 8px 8px;
+        font-size: 2rem;
+      }
+
+      .actions {
+        gap: 8px;
+      }
+
+      button.action {
+        flex: 1 1 100%;
+        min-height: 82px;
+        padding: 12px 14px;
+        font-size: 2rem;
+      }
+
+      table {
+        font-size: 1.02rem;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      /* 手機同樣維持第一卡文字 1.5 倍 */
+      .main-card h1 {
+        font-size: 3rem;
+      }
+
+      .main-card .title-sub {
+        font-size: 1.95rem;
+      }
+
+      .main-card .subtitle,
+      .main-card .hint,
+      .main-card .message {
+        font-size: 1.83rem;
+      }
+
+      .main-card .round-chip,
+      .main-card .debuff-label {
+        font-size: 1.8rem;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <section class="card">
+    <section class="card main-card">
       <h1>天演獸史詩 <span class="title-sub">楓橋夜泊 孟寰</span></h1>
       <p class="subtitle">每輪按下罐子出現的 3 個屬性，系統會立即建議第1隊、第2隊、第3隊站位（狂暴固定存在）。</p>
 
@@ -275,18 +492,22 @@
         <span class="round-chip" id="roundChip">目前：第 1 輪</span>
       </div>
 
-      <div id="jarGrid" class="jar-grid"></div>
       <div id="debuffRow" class="debuff-row"></div>
-      <div class="selected" id="selectedText"></div>
+      <div class="battle-grid">
+        <div id="jarGrid" class="jar-grid"></div>
+        <div class="quick-result">
+          <div class="quick-result-grid" id="quickResult"></div>
+        </div>
+      </div>
 
       <div class="actions">
-        <button class="action primary" id="confirmBtn">確認本輪並給建議</button>
+        <button class="action primary" id="confirmBtn">確認本輪</button>
         <button class="action secondary" id="undoBtn">回上一輪</button>
         <button class="action secondary" id="resetBtn">全部重置</button>
       </div>
 
       <div id="message" class="message"></div>
-      <div class="hint">規則：每輪選 3 個不重複屬性（會心/氣血/移速/攻速/範圍），狂暴自動加入；可選擇第1/第2隊禁狂暴 Debuff。</div>
+      <div class="hint">規則：每輪選 3 個不重複屬性（會心/氣血/移速/攻速/範圍），狂暴自動加入；可選擇第1/第2/第3隊禁狂暴 Debuff。</div>
     </section>
 
     <section class="card">
@@ -305,13 +526,13 @@
       selected: new Set(),
       records: [],
       usedAttrs: [new Set(), new Set(), new Set()],
-      noBerserk: [false, false]
+      noBerserk: [false, false, false]
     };
 
     const jarGridEl = document.getElementById("jarGrid");
     const roundChipEl = document.getElementById("roundChip");
-    const selectedTextEl = document.getElementById("selectedText");
     const debuffRowEl = document.getElementById("debuffRow");
+    const quickResultEl = document.getElementById("quickResult");
     const messageEl = document.getElementById("message");
     const resultEl = document.getElementById("result");
     const statsEl = document.getElementById("stats");
@@ -351,44 +572,70 @@
             state.selected.add(attr);
           }
           renderJarButtons();
-          renderSelectedText();
         });
 
         jarGridEl.appendChild(btn);
       });
+
+      const berserkBtn = document.createElement("button");
+      berserkBtn.type = "button";
+      berserkBtn.className = "jar-btn";
+      berserkBtn.textContent = "狂暴";
+      berserkBtn.disabled = true;
+      jarGridEl.appendChild(berserkBtn);
     }
 
     function renderDebuffButtons() {
       debuffRowEl.innerHTML = "";
-      const labels = ["第1隊禁狂暴", "第2隊禁狂暴"];
+      const title = document.createElement("span");
+      title.className = "debuff-label";
+      title.textContent = "禁狂暴";
+      debuffRowEl.appendChild(title);
+
+      const labels = ["1隊", "2隊", "3隊"];
+      const round3LockedTeam = state.currentRound === 3 ? getRoundBerserkTeam(2) : -1;
       labels.forEach((label, idx) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = `debuff-btn ${state.noBerserk[idx] ? "active" : ""}`.trim();
         btn.textContent = label;
+        // 第3輪延續機制：第2輪吃狂暴那隊必須禁狂暴，不可手動關閉
+        if (idx === round3LockedTeam) btn.disabled = true;
         btn.addEventListener("click", () => {
           state.noBerserk[idx] = !state.noBerserk[idx];
           renderDebuffButtons();
-          renderSelectedText();
         });
         debuffRowEl.appendChild(btn);
       });
     }
 
-    function renderSelectedText() {
-      const selected = [...state.selected];
-      const debuffs = [];
-      if (state.noBerserk[0]) debuffs.push("第1隊禁狂暴");
-      if (state.noBerserk[1]) debuffs.push("第2隊禁狂暴");
-      const debuffText = debuffs.length ? ` ｜ Debuff：${debuffs.join("、")}` : "";
-      if (state.currentRound > 3) {
-        selectedTextEl.textContent = "已完成全部輪次，可回上一輪修正或全部重置。";
-        return;
+    function renderQuickResult(record) {
+      const allJars = [...ATTRS, "狂暴"];
+      const roleByJar = {};
+      if (record) {
+        roleByJar[record.teams[0]] = { text: "1隊", cls: "role-team1" };
+        roleByJar[record.teams[1]] = { text: "2隊", cls: "role-team2" };
+        roleByJar[record.teams[2]] = { text: "3隊", cls: "role-team3" };
+        roleByJar[record.king] = { text: "王吸收", cls: "role-king" };
       }
-      if (selected.length === 0) {
-        selectedTextEl.textContent = `尚未選擇屬性。${debuffText}`;
-      } else {
-        selectedTextEl.textContent = `第 ${state.currentRound} 輪已選：${selected.join("、")}（自動加上狂暴）${debuffText}`;
+      quickResultEl.innerHTML = allJars.map((jar) => {
+        const role = roleByJar[jar] || { text: "-", cls: "role-empty" };
+        return `<div class="quick-result-cell"><span class="role-badge ${role.cls}">${role.text}</span></div>`;
+      }).join("");
+    }
+
+    function getRoundBerserkTeam(round) {
+      const record = state.records.find((rec) => rec.round === round);
+      if (!record) return -1;
+      return record.teams.findIndex((jar) => jar === "狂暴");
+    }
+
+    function applyRoundDebuffDefaults() {
+      state.noBerserk = [false, false, false];
+      // 第3輪預設：第2輪吃狂暴的那隊先禁狂暴（可視化提醒）
+      if (state.currentRound === 3) {
+        const round2BerserkTeam = getRoundBerserkTeam(2);
+        if (round2BerserkTeam !== -1) state.noBerserk[round2BerserkTeam] = true;
       }
     }
 
@@ -407,6 +654,7 @@
 
     function findBestForCurrentRound(attrs) {
       const jars = [...attrs, "狂暴"];
+      const round2BerserkTeam = state.currentRound === 3 ? getRoundBerserkTeam(2) : -1;
       let best = null;
 
       for (let i = 0; i < 4; i += 1) {
@@ -420,8 +668,13 @@
 
             for (let t = 0; t < 3; t += 1) {
               const jar = teams[t];
-              // Debuff：第1/第2隊被標記禁狂暴時，本輪不可分配狂暴
-              if (jar === "狂暴" && t < 2 && state.noBerserk[t]) {
+              // Debuff：被標記禁狂暴的隊伍，本輪不可分配狂暴
+              if (jar === "狂暴" && state.noBerserk[t]) {
+                valid = false;
+                break;
+              }
+              // 硬性規則：第2輪與第3輪狂暴不能同隊
+              if (jar === "狂暴" && state.currentRound === 3 && t === round2BerserkTeam) {
                 valid = false;
                 break;
               }
@@ -568,15 +821,14 @@
 
       state.records.push(record);
       recomputeUsedAttrsFromRecords();
+      renderQuickResult(record);
 
       state.currentRound += 1;
       state.selected.clear();
-      // Debuff 僅本輪有效，進下一輪後必須重新勾選
-      state.noBerserk = [false, false];
+      applyRoundDebuffDefaults();
       updateRoundChip();
       renderJarButtons();
       renderDebuffButtons();
-      renderSelectedText();
       renderRecordsAndStats();
 
       if (state.currentRound > 3) {
@@ -595,13 +847,13 @@
       const last = state.records.pop();
       state.currentRound = last.round;
       state.selected = new Set(last.attrs);
-      state.noBerserk = [false, false];
+      applyRoundDebuffDefaults();
       recomputeUsedAttrsFromRecords();
       renderRecordsAndStats();
       updateRoundChip();
       renderJarButtons();
       renderDebuffButtons();
-      renderSelectedText();
+      renderQuickResult(state.records[state.records.length - 1] || null);
 
       setMessage(`已回到第 ${state.currentRound} 輪，可重新選擇。`, "success");
     }
@@ -611,13 +863,13 @@
       state.selected = new Set();
       state.records = [];
       state.usedAttrs = [new Set(), new Set(), new Set()];
-      state.noBerserk = [false, false];
+      applyRoundDebuffDefaults();
 
       setMessage("");
       updateRoundChip();
       renderJarButtons();
       renderDebuffButtons();
-      renderSelectedText();
+      renderQuickResult(null);
       renderRecordsAndStats();
     }
 
