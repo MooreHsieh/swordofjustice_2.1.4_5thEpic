@@ -127,6 +127,13 @@
       transform: none;
     }
 
+    .jar-btn.berserk-fixed:disabled {
+      opacity: 1;
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
     .quick-result {
       margin-top: 10px;
       padding: 0;
@@ -558,7 +565,7 @@
 
       const berserkBtn = document.createElement("button");
       berserkBtn.type = "button";
-      berserkBtn.className = "jar-btn";
+      berserkBtn.className = "jar-btn berserk-fixed";
       berserkBtn.textContent = "狂暴";
       berserkBtn.disabled = true;
       jarGridEl.appendChild(berserkBtn);
