@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>天演獸史詩 - 楓橋夜泊 孟寰</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --panel: #ffffff;
+      --line: #d1d5db;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --active: #0f766e;
+      --active-bg: #d1fae5;
+      --danger: #b91c1c;
+      --ok: #166534;
+      --shadow: 0 10px 24px rgba(2, 6, 23, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top right, #dbeafe 0%, var(--bg) 42%, #f8fafc 100%);
+      color: var(--text);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.55rem;
+    }
+
+    .title-sub {
+      margin-left: 8px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .round-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .round-chip.done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .jar-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .jar-btn {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: #1f2937;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 10px 8px;
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    .jar-btn:hover {
+      border-color: #9ca3af;
+      transform: translateY(-1px);
+    }
+
+    .jar-btn.active {
+      background: var(--active-bg);
+      border-color: var(--active);
+      color: var(--active);
+    }
+
+    .jar-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .selected {
+      margin-top: 12px;
+      color: #0f172a;
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .debuff-row {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .debuff-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #374151;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .debuff-btn.active {
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #991b1b;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button.action {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .secondary:hover {
+      background: #d1d5db;
+    }
+
+    .message {
+      margin-top: 12px;
+      min-height: 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .message.success {
+      color: var(--ok);
+    }
+
+    .result-wrap {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+    }
+
+    tr.current-round td {
+      background: #fef3c7;
+    }
+
+    tr.pending-round td {
+      color: #6b7280;
+    }
+
+    .stats {
+      margin-top: 12px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.94rem;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 12px;
+      }
+
+      .jar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="card">
+      <h1>天演獸史詩 <span class="title-sub">楓橋夜泊 孟寰</span></h1>
+      <p class="subtitle">每輪按下罐子出現的 3 個屬性，系統會立即建議第1隊、第2隊、第3隊站位（狂暴固定存在）。</p>
+
+      <div class="row">
+        <span class="round-chip" id="roundChip">目前：第 1 輪</span>
+      </div>
+
+      <div id="jarGrid" class="jar-grid"></div>
+      <div id="debuffRow" class="debuff-row"></div>
+      <div class="selected" id="selectedText"></div>
+
+      <div class="actions">
+        <button class="action primary" id="confirmBtn">確認本輪並給建議</button>
+        <button class="action secondary" id="undoBtn">回上一輪</button>
+        <button class="action secondary" id="resetBtn">全部重置</button>
+      </div>
+
+      <div id="message" class="message"></div>
+      <div class="hint">規則：每輪選 3 個不重複屬性（會心/氣血/移速/攻速/範圍），狂暴自動加入；可選擇第1/第2隊禁狂暴 Debuff。</div>
+    </section>
+
+    <section class="card">
+      <h2 style="margin:0; font-size:1.2rem;">已鎖定輪次與統計</h2>
+      <div id="result" class="result-wrap"></div>
+      <div id="stats" class="stats"></div>
+    </section>
+  </div>
+
+  <script>
+    const ATTRS = ["會心", "氣血", "移速", "攻速", "範圍"];
+    const JAR_PRIORITY = ["狂暴", "會心", "氣血", "移速", "攻速", "範圍"];
+
+    const state = {
+      currentRound: 1,
+      selected: new Set(),
+      records: [],
+      usedAttrs: [new Set(), new Set(), new Set()],
+      noBerserk: [false, false]
+    };
+
+    const jarGridEl = document.getElementById("jarGrid");
+    const roundChipEl = document.getElementById("roundChip");
+    const selectedTextEl = document.getElementById("selectedText");
+    const debuffRowEl = document.getElementById("debuffRow");
+    const messageEl = document.getElementById("message");
+    const resultEl = document.getElementById("result");
+    const statsEl = document.getElementById("stats");
+
+    function setMessage(text, type = "") {
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`.trim();
+    }
+
+    function updateRoundChip() {
+      if (state.currentRound <= 3) {
+        roundChipEl.className = "round-chip";
+        roundChipEl.textContent = `目前：第 ${state.currentRound} 輪`;
+      } else {
+        roundChipEl.className = "round-chip done";
+        roundChipEl.textContent = "3 輪已完成";
+      }
+    }
+
+    function renderJarButtons() {
+      jarGridEl.innerHTML = "";
+      const roundDone = state.currentRound > 3;
+
+      ATTRS.forEach((attr) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `jar-btn ${state.selected.has(attr) ? "active" : ""}`.trim();
+        btn.textContent = attr;
+
+        const cannotSelectMore = state.selected.size >= 3 && !state.selected.has(attr);
+        btn.disabled = roundDone || cannotSelectMore;
+
+        btn.addEventListener("click", () => {
+          if (state.selected.has(attr)) {
+            state.selected.delete(attr);
+          } else if (state.selected.size < 3) {
+            state.selected.add(attr);
+          }
+          renderJarButtons();
+          renderSelectedText();
+        });
+
+        jarGridEl.appendChild(btn);
+      });
+    }
+
+    function renderDebuffButtons() {
+      debuffRowEl.innerHTML = "";
+      const labels = ["第1隊禁狂暴", "第2隊禁狂暴"];
+      labels.forEach((label, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `debuff-btn ${state.noBerserk[idx] ? "active" : ""}`.trim();
+        btn.textContent = label;
+        btn.addEventListener("click", () => {
+          state.noBerserk[idx] = !state.noBerserk[idx];
+          renderDebuffButtons();
+          renderSelectedText();
+        });
+        debuffRowEl.appendChild(btn);
+      });
+    }
+
+    function renderSelectedText() {
+      const selected = [...state.selected];
+      const debuffs = [];
+      if (state.noBerserk[0]) debuffs.push("第1隊禁狂暴");
+      if (state.noBerserk[1]) debuffs.push("第2隊禁狂暴");
+      const debuffText = debuffs.length ? ` ｜ Debuff：${debuffs.join("、")}` : "";
+      if (state.currentRound > 3) {
+        selectedTextEl.textContent = "已完成全部輪次，可回上一輪修正或全部重置。";
+        return;
+      }
+      if (selected.length === 0) {
+        selectedTextEl.textContent = `尚未選擇屬性。${debuffText}`;
+      } else {
+        selectedTextEl.textContent = `第 ${state.currentRound} 輪已選：${selected.join("、")}（自動加上狂暴）${debuffText}`;
+      }
+    }
+
+    function compareCandidate(a, b) {
+      if (!b) return 1;
+      // 第一優先：讓玩家吃機制簡單的罐子（狂暴 > 會心 > 氣血 > ...）
+      for (let i = 0; i < a.easeKey.length; i += 1) {
+        if (a.easeKey[i] !== b.easeKey[i]) return a.easeKey[i] > b.easeKey[i] ? 1 : -1;
+      }
+      // 第二優先：第一優先相同時，盡量把狂暴給第3隊
+      if (a.team3Berserk !== b.team3Berserk) return a.team3Berserk > b.team3Berserk ? 1 : -1;
+      // 第三優先：保留後續輪次可用屬性空間
+      if (a.flexibility !== b.flexibility) return a.flexibility > b.flexibility ? 1 : -1;
+      return 0;
+    }
+
+    function findBestForCurrentRound(attrs) {
+      const jars = [...attrs, "狂暴"];
+      let best = null;
+
+      for (let i = 0; i < 4; i += 1) {
+        for (let j = 0; j < 4; j += 1) {
+          if (j === i) continue;
+          for (let k = 0; k < 4; k += 1) {
+            if (k === i || k === j) continue;
+
+            const teams = [jars[i], jars[j], jars[k]];
+            let valid = true;
+
+            for (let t = 0; t < 3; t += 1) {
+              const jar = teams[t];
+              // Debuff：第1/第2隊被標記禁狂暴時，本輪不可分配狂暴
+              if (jar === "狂暴" && t < 2 && state.noBerserk[t]) {
+                valid = false;
+                break;
+              }
+              // 核心機制：同隊跨輪吃重複屬性會死掉，所以直接視為非法方案
+              if (jar !== "狂暴" && state.usedAttrs[t].has(jar)) {
+                valid = false;
+                break;
+              }
+            }
+            if (!valid) continue;
+
+            const occupied = new Set([i, j, k]);
+            const kingIdx = [0, 1, 2, 3].find((idx) => !occupied.has(idx));
+            const king = jars[kingIdx];
+
+            const tempUsage = state.usedAttrs.map((set) => new Set(set));
+            for (let t = 0; t < 3; t += 1) {
+              if (teams[t] !== "狂暴") tempUsage[t].add(teams[t]);
+            }
+
+            const candidate = {
+              teams,
+              king,
+              // 以優先序計算偏好鍵，越前面的罐子數量越多越好
+              easeKey: JAR_PRIORITY.map((jarName) => teams.filter((jar) => jar === jarName).length),
+              team3Berserk: teams[2] === "狂暴" ? 1 : 0,
+              flexibility: tempUsage.reduce((sum, set) => sum + (5 - set.size), 0)
+            };
+
+            if (compareCandidate(candidate, best) > 0) {
+              best = candidate;
+            }
+          }
+        }
+      }
+
+      return best;
+    }
+
+    function recomputeUsedAttrsFromRecords() {
+      state.usedAttrs = [new Set(), new Set(), new Set()];
+      state.records.forEach((rec) => {
+        for (let t = 0; t < 3; t += 1) {
+          const jar = rec.teams[t];
+          if (jar !== "狂暴") state.usedAttrs[t].add(jar);
+        }
+      });
+    }
+
+    function renderRecordsAndStats() {
+      const recordMap = new Map(state.records.map((rec) => [rec.round, rec]));
+      const latestRecommendedRound = state.records.length
+        ? state.records[state.records.length - 1].round
+        : null;
+      const rows = [1, 2, 3].map((round) => {
+        const rec = recordMap.get(round);
+        const classNames = [];
+        // Highlight 顯示「最新建議」那一行，方便實戰時快速看最新答案
+        if (rec && latestRecommendedRound === round) classNames.push("current-round");
+        if (!rec) classNames.push("pending-round");
+        const rowClass = classNames.length ? ` class="${classNames.join(" ")}"` : "";
+        if (!rec) {
+          return `
+            <tr${rowClass}>
+              <td>第 ${round} 輪</td>
+              <td>（待輸入）</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          `;
+        }
+        return `
+          <tr${rowClass}>
+            <td>第 ${rec.round} 輪</td>
+            <td>${rec.jars.join(" / ")}</td>
+            <td>${rec.teams[0]}</td>
+            <td>${rec.teams[1]}</td>
+            <td>${rec.teams[2]}</td>
+            <td>${rec.king}</td>
+          </tr>
+        `;
+      }).join("");
+
+      resultEl.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>輪次</th>
+              <th>出現罐子</th>
+              <th>第1隊</th>
+              <th>第2隊</th>
+              <th>第3隊</th>
+              <th>王吸收</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      const usage = state.usedAttrs.map((set, idx) => {
+        const items = [...set];
+        return `第${idx + 1}隊：${items.length ? items.join("、") : "（無）"}`;
+      });
+
+      statsEl.innerHTML = `
+        <div><strong>每隊已站過屬性：</strong>${usage.join(" ｜ ")}</div>
+      `;
+    }
+
+    function confirmRound() {
+      if (state.currentRound > 3) {
+        setMessage("3 輪已完成，如需調整請先回上一輪或重置。", "error");
+        return;
+      }
+
+      if (state.selected.size !== 3) {
+        setMessage(`第 ${state.currentRound} 輪需要選滿 3 個屬性。`, "error");
+        return;
+      }
+
+      const attrs = [...state.selected];
+      // 特例規則：攻速+範圍同時出現時，直接提示重開，不進行分配
+      if (attrs.includes("攻速") && attrs.includes("範圍")) {
+        const warning = "請自斷重新開始";
+        setMessage(warning, "error");
+        return;
+      }
+
+      const best = findBestForCurrentRound(attrs);
+      if (!best) {
+        setMessage(`第 ${state.currentRound} 輪找不到合法站位，請回上一輪重配或重置。`, "error");
+        return;
+      }
+
+      const record = {
+        round: state.currentRound,
+        attrs,
+        jars: [...attrs, "狂暴"],
+        teams: [...best.teams],
+        king: best.king
+      };
+
+      state.records.push(record);
+      recomputeUsedAttrsFromRecords();
+
+      state.currentRound += 1;
+      state.selected.clear();
+      // Debuff 僅本輪有效，進下一輪後必須重新勾選
+      state.noBerserk = [false, false];
+      updateRoundChip();
+      renderJarButtons();
+      renderDebuffButtons();
+      renderSelectedText();
+      renderRecordsAndStats();
+
+      if (state.currentRound > 3) {
+        setMessage("3 輪建議已全部完成。", "success");
+      } else {
+        setMessage(`第 ${record.round} 輪已鎖定，請輸入第 ${state.currentRound} 輪。`, "success");
+      }
+    }
+
+    function undoRound() {
+      if (state.records.length === 0) {
+        setMessage("目前沒有可回退的輪次。", "error");
+        return;
+      }
+
+      const last = state.records.pop();
+      state.currentRound = last.round;
+      state.selected = new Set(last.attrs);
+      state.noBerserk = [false, false];
+      recomputeUsedAttrsFromRecords();
+      renderRecordsAndStats();
+      updateRoundChip();
+      renderJarButtons();
+      renderDebuffButtons();
+      renderSelectedText();
+
+      setMessage(`已回到第 ${state.currentRound} 輪，可重新選擇。`, "success");
+    }
+
+    function resetAll() {
+      state.currentRound = 1;
+      state.selected = new Set();
+      state.records = [];
+      state.usedAttrs = [new Set(), new Set(), new Set()];
+      state.noBerserk = [false, false];
+
+      setMessage("");
+      updateRoundChip();
+      renderJarButtons();
+      renderDebuffButtons();
+      renderSelectedText();
+      renderRecordsAndStats();
+    }
+
+    document.getElementById("confirmBtn").addEventListener("click", confirmRound);
+    document.getElementById("undoBtn").addEventListener("click", undoRound);
+    document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+    resetAll();
+  </script>
+</body>
+</html>
