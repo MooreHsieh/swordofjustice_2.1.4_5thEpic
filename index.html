@@ -484,7 +484,7 @@
       </div>
 
       <div id="message" class="message"></div>
-      <div class="hint">規則：每輪選 3 個不重複屬性（會心/氣血/移速/攻速/範圍），狂暴自動加入；可選擇第1/第2/第3隊禁狂暴 Debuff。</div>
+      <div class="hint">規則：選滿 3 個屬性會自動計算建議；調整禁狂暴也會即時重算。按「確認本輪」才會鎖定並進入下一輪。</div>
     </section>
 
     <section class="card">
@@ -503,7 +503,8 @@
       selected: new Set(),
       records: [],
       usedAttrs: [new Set(), new Set(), new Set()],
-      noBerserk: [false, false, false]
+      noBerserk: [false, false, false],
+      currentSuggestion: null
     };
 
     const jarGridEl = document.getElementById("jarGrid");
@@ -549,6 +550,7 @@
             state.selected.add(attr);
           }
           renderJarButtons();
+          recomputeCurrentSuggestion();
         });
 
         jarGridEl.appendChild(btn);
@@ -581,6 +583,7 @@
         btn.addEventListener("click", () => {
           state.noBerserk[idx] = !state.noBerserk[idx];
           renderDebuffButtons();
+          recomputeCurrentSuggestion();
         });
         debuffRowEl.appendChild(btn);
       });
@@ -691,6 +694,46 @@
       return best;
     }
 
+    function recomputeCurrentSuggestion() {
+      state.currentSuggestion = null;
+
+      if (state.currentRound > 3) {
+        renderQuickResult(state.records[state.records.length - 1] || null);
+        return;
+      }
+
+      if (state.selected.size !== 3) {
+        renderQuickResult(null);
+        setMessage("");
+        return;
+      }
+
+      const attrs = [...state.selected];
+      // 特例規則：攻速+範圍同時出現時，直接提示重開，不進行分配
+      if (attrs.includes("攻速") && attrs.includes("範圍")) {
+        renderQuickResult(null);
+        setMessage("請自斷重新開始", "error");
+        return;
+      }
+
+      const best = findBestForCurrentRound(attrs);
+      if (!best) {
+        renderQuickResult(null);
+        setMessage(`第 ${state.currentRound} 輪找不到合法站位，請調整屬性或禁狂暴。`, "error");
+        return;
+      }
+
+      state.currentSuggestion = {
+        round: state.currentRound,
+        attrs,
+        jars: [...attrs, "狂暴"],
+        teams: [...best.teams],
+        king: best.king
+      };
+      renderQuickResult(state.currentSuggestion);
+      setMessage("");
+    }
+
     function recomputeUsedAttrsFromRecords() {
       state.usedAttrs = [new Set(), new Set(), new Set()];
       state.records.forEach((rec) => {
@@ -769,31 +812,17 @@
         return;
       }
 
-      if (state.selected.size !== 3) {
-        setMessage(`第 ${state.currentRound} 輪需要選滿 3 個屬性。`, "error");
-        return;
-      }
-
-      const attrs = [...state.selected];
-      // 特例規則：攻速+範圍同時出現時，直接提示重開，不進行分配
-      if (attrs.includes("攻速") && attrs.includes("範圍")) {
-        const warning = "請自斷重新開始";
-        setMessage(warning, "error");
-        return;
-      }
-
-      const best = findBestForCurrentRound(attrs);
-      if (!best) {
-        setMessage(`第 ${state.currentRound} 輪找不到合法站位，請回上一輪重配或重置。`, "error");
+      if (!state.currentSuggestion) {
+        setMessage(`第 ${state.currentRound} 輪尚未產生可鎖定的建議，請先選滿 3 個屬性。`, "error");
         return;
       }
 
       const record = {
-        round: state.currentRound,
-        attrs,
-        jars: [...attrs, "狂暴"],
-        teams: [...best.teams],
-        king: best.king
+        round: state.currentSuggestion.round,
+        attrs: [...state.currentSuggestion.attrs],
+        jars: [...state.currentSuggestion.jars],
+        teams: [...state.currentSuggestion.teams],
+        king: state.currentSuggestion.king
       };
 
       state.records.push(record);
@@ -802,10 +831,12 @@
 
       state.currentRound += 1;
       state.selected.clear();
+      state.currentSuggestion = null;
       applyRoundDebuffDefaults();
       updateRoundChip();
       renderJarButtons();
       renderDebuffButtons();
+      renderQuickResult(null);
       renderRecordsAndStats();
 
       if (state.currentRound > 3) {
@@ -830,7 +861,7 @@
       updateRoundChip();
       renderJarButtons();
       renderDebuffButtons();
-      renderQuickResult(state.records[state.records.length - 1] || null);
+      recomputeCurrentSuggestion();
 
       setMessage(`已回到第 ${state.currentRound} 輪，可重新選擇。`, "success");
     }
@@ -840,6 +871,7 @@
       state.selected = new Set();
       state.records = [];
       state.usedAttrs = [new Set(), new Set(), new Set()];
+      state.currentSuggestion = null;
       applyRoundDebuffDefaults();
 
       setMessage("");
